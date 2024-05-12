@@ -35,39 +35,36 @@ float a,b;			//�������ֵ
 void Motor()
 {
 
-// Tips:���²���Ϊ����������
-
-//��ȡ�ɼ����ı�����������
+	// Tips:���²���Ϊ����������
+	//��ȡ�ɼ����ı�����������
 	templ_pluse = ctimer_count_read(SPEEDL_PLUSE);
 	tempr_pluse = ctimer_count_read(SPEEDR_PLUSE);
 
-//����������
+	//����������
 	ctimer_count_clean(SPEEDL_PLUSE);
 	ctimer_count_clean(SPEEDR_PLUSE);
 
-//�ɼ�������Ϣ
+	//�ɼ�������Ϣ
 	if(SPEEDL_DIR == 0)   templ_pluse = -templ_pluse;
 	if(SPEEDR_DIR == 1)   tempr_pluse = -tempr_pluse;
 	//����Ŀǰ�ٶ�
 	Current_speed=(abs(templ_pluse)+abs(tempr_pluse))/2;
 	Current_speed=(1)*Current_speed*20.4/(2355.2*0.02);
-	//�ٶ�=������*�ܳ�/2368*����;�õ�ʵ��ֵ 
-	//Tips:���²���Ϊֱ�߲�������
+	//�ٶ�=������*�ܳ�/2368*����;�õ�ʵ��ֵ  Tips:���²���Ϊֱ�߲�������
 
 	speed_R = 25;
 	speed_L = 25;
 		
-
 	// Tips:���²���ΪPID���Ʋ���
-	
-	// Speed Value Left
+
+	// Speed Value: Left
 	leftSpeed = (1)*templ_pluse*20.4/(2355.2*0.02);
 	//�ٶ�=������*�ܳ�/2368*����;�õ�ʵ��ֵ
 
-	// Speed Value Right
+	// Speed Value: Right
 	rightSpeed = (1)*tempr_pluse*20.4/(2355.2*0.02);
 	//�ٶ�=������*�ܳ�/2368*����;�õ�ʵ��ֵ
-	
+
 	// PID
 	error1=(int)(speed_L-leftSpeed)*(1);
 	dutyL=dutyL+(error1-error_pre1)*Motor_P+error1*Motor_I+	(error1-2*(error_pre1)+error_pre_last1)*Motor_D;
@@ -80,47 +77,44 @@ void Motor()
 	error_pre2=error2;
 					
 	// Tips:���²���Ϊ���ٿ��Ʋ���(PID)
-
 	// Turn Around
 
-	if(Type == 1)
-	{
-	if(offset2 > 0){	
-	// offset = data_last0 - data_last4
-	// dir_error : last
-	// dir_error_last : last last
-	// Dir_value -> Target
-	// Upgrade:
-	Dir_value = (offset-dir_error)*Dir_P+offset*Dir_I+(offset-2*(dir_error)+dir_error_last)*Dir_D;
-	dir_error_last = dir_error;
-	dir_error = offset;
-	// dutyR -> Speed
-	dutyR = dutyR-multiple*Dir_value;
-	dutyL = dutyL+multiple*Dir_value;
+	if(Type == 1){
+		if(offset2 > 0){	
+			// offset = data_last0 - data_last4
+			// dir_error : last
+			// dir_error_last : last last
+			// Dir_value -> Target
+			// Upgrade:
+			Dir_value = (offset-dir_error)*Dir_P+offset*Dir_I+(offset-2*(dir_error)+dir_error_last)*Dir_D;
+			dir_error_last = dir_error;
+			dir_error = offset;
+			// dutyR -> Speed
+			dutyR = dutyR-multiple*Dir_value;
+			dutyL = dutyL+multiple*Dir_value;
+		}
+
+		else{
+			Dir_value = (offset-dir_error)*Dir_Pr+offset*Dir_Ir+(offset-2*(dir_error)+dir_error_last)*Dir_Dr;
+			dir_error_last = dir_error;
+			dir_error = offset;
+			dutyR = dutyR-multiple*Dir_value;
+			dutyL = dutyL+multiple*Dir_value;
+		}
 	}
-	
-	else{
-	Dir_value = (offset-dir_error)*Dir_Pr+offset*Dir_Ir+(offset-2*(dir_error)+dir_error_last)*Dir_Dr;
-	dir_error_last = dir_error;
-	dir_error = offset;
-	dutyR = dutyR-multiple*Dir_value;
-	dutyL = dutyL+multiple*Dir_value;
-	}
-}
 
 			
 
 // Tips:����ֱ�ߵ��ڲ���(off)
-
 //	if(abs(offset2) > 20 )
 //	{Line_P=0.2;Line_I=0.15;}
 
+	 // Value
+	if(abs(offset2) > 30 ){
+		Line_P=10;Line_I=1;correction_value = 1.0;
+		}
 
-	if(abs(offset2) > 30 ) // Value
-		{Line_P=10;Line_I=1;correction_value = 1.0;}
-
-	if(Type == 0)
-		{
+	if(Type == 0){
 		// offset2 : now  Line_error : last 
 		Line_value = (offset2-Line_error)*Line_P+offset2*Line_I;
 		Line_error = offset2;
@@ -173,21 +167,21 @@ void Motor()
 	// Tips:���²���Ϊ����ͣ������
 	// Stop Car
 	if(data_last[0]+data_last[1]+data_last[4]+data_last[3]<=200){
-			dutyL = dutyR = 0;}
+		dutyL = dutyR = 0;
+		}
 
 	
 	// Tips:�������ϳ���
 	// Avoid obstacles		
-	if(delay_avoiding == 1)
-		{
+	if(delay_avoiding == 1){
 		if(Distance < 50)
-		{dutyL = 2000;dutyR = -1800;}
+			{dutyL = 2000;dutyR = -1800;}
 		else if(Distance < 110)
-		{dutyL = 2000;dutyR = 2000;}
+			{dutyL = 2000;dutyR = 2000;}
 		else if(Distance < 210)
-		{dutyR = 4500;dutyL = -2300;}
+			{dutyR = 4500;dutyL = -2300;}
 		else
-		{dutyL = 2000;dutyR = 2000;}	
+			{dutyL = 2000;dutyR = 2000;}	
 		}
 	
 
@@ -208,20 +202,17 @@ void Motor()
 	
 
 	// NO CHANGE
-	if(dutyL <= 0) //��ת
-        {
-			DIR_L = 0;
-			pwm_duty(PWM_L, -dutyL);}
-	else
-				{
-			DIR_L = 1;
-			pwm_duty(PWM_L, dutyL);}
-	if(dutyR <= 0) //��ת
-				{			
-			DIR_R = 0;
-			pwm_duty(PWM_R, -dutyR);}  
-  else         //��ת
-        {			
-			DIR_R = 1;
-			pwm_duty(PWM_R, dutyR);}
+	if(dutyL <= 0){
+		DIR_L = 0;
+		pwm_duty(PWM_L, -dutyL);}
+	else{
+		DIR_L = 1;
+		pwm_duty(PWM_L, dutyL);}
+
+	if(dutyR <= 0){			
+		DIR_R = 0;
+		pwm_duty(PWM_R, -dutyR);}  
+	else{			
+		DIR_R = 1;
+		pwm_duty(PWM_R, dutyR);}
 }	

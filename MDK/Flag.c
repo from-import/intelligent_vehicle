@@ -1,7 +1,7 @@
 #include "headfile.h"
 #include "Initial.h"
 
-//Âß¼­±äÁ¿
+//ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½
 int Type = 0;
 int multiple = 1;
 int delay_circle = 0;
@@ -10,68 +10,72 @@ int Chance = 0;
 int Demo = 0;
 
 void circle()
-{
-	//delay_circle,ÑÓ³ÙÈë»·±ê¼Ç
+{	
+	//delay_circle,ï¿½Ó³ï¿½ï¿½ë»·ï¿½ï¿½ï¿½
 	if(Type == 2)
-	{delay_circle = 1;Record_Dis = 1;Demo = 1;}
-	else if(Type == 3)
-	{delay_circle = 2;Record_Dis = 1;Demo = 1;}
-	//Èë»·µÚ¶þ½×¶Î½ø»·
+		{delay_circle = 1;Record_Dis = 1;Demo = 1;}
+	if(Type == 3)
+		{delay_circle = 2;Record_Dis = 1;Demo = 1;}
+
+	//ï¿½ë»·ï¿½Ú¶ï¿½ï¿½×¶Î½ï¿½ï¿½ï¿½
 	if(Demo == 1 && Distance > 80 )
-	{Demo = 2;Record_Dis = 0;Yaw=0;}
-	//Èë»·µÚÈý½×¶Î£¬Ô¤³ö»·
+		{Demo = 2;Record_Dis = 0;Yaw=0;}
+	//ï¿½ë»·ï¿½ï¿½ï¿½ï¿½ï¿½×¶Î£ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½
 	if(Demo == 2 && abs(Yaw) > 300)
-	{Demo = 3;Record_Dis = 1;Distance = 0;}
-	//Èë»·µÚÈý½×¶Î£¬³ö»·
+		{Demo = 3;Record_Dis = 1;Distance = 0;}
+	//ï¿½ë»·ï¿½ï¿½ï¿½ï¿½ï¿½×¶Î£ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(Demo == 3 && Distance > 100)
-	{Type = 0;delay_circle = 0;Record_Dis = 0;}
+		{Type = 0;delay_circle = 0;Record_Dis = 0;}
 }
 
 void Flag()
 {
 	/*****************************************************************
-	Tips:Type=0  ÎªÖ±Ïß×´Ì¬ // Go Long
-	     Type=1  Îª×ªÍä×´Ì¬ // turn 
-			 Type=2  ÎªRÈë»·×´Ì¬  // RIGHT GO IN  CIRCLE
-			 Type=3  ÎªLÈë»·×´Ì¬ 	// LEFT GO IN CIRCLE
-			 Type=4  Îª±ÜÕÏ×´Ì¬ // Avoid Obstacles
+	Tips:Type=0  ÎªÖ±ï¿½ï¿½×´Ì¬ // Go Long
+	     Type=1  Îª×ªï¿½ï¿½×´Ì¬ // turn 
+			 Type=2  ÎªRï¿½ë»·×´Ì¬  // RIGHT GO IN  CIRCLE
+			 Type=3  ÎªLï¿½ë»·×´Ì¬ 	// LEFT GO IN CIRCLE
+			 Type=4  Îªï¿½ï¿½ï¿½ï¿½×´Ì¬ // Avoid Obstacles
 	*****************************************************************/	
 	
-	
-	
-//	if((data_last[1] > 300 && data_last[3] > 10) && data_last[2] > 255)	//Ê®×ÖÅÐ¶¨
+//	if((data_last[1] > 300 && data_last[3] > 10) && data_last[2] > 255)	//Ê®ï¿½ï¿½ï¿½Ð¶ï¿½
 //		Type = 0;
-//	else if((data_last[3] > 300 && data_last[1] > 5) && data_last[2] > 255)	//Ê®×ÖÅÐ¶¨
+//	else if((data_last[3] > 300 && data_last[1] > 5) && data_last[2] > 255)	//Ê®ï¿½ï¿½ï¿½Ð¶ï¿½
 //		Type = 0;
-		if((data_last[1] >  200 || data_last[3] > 200) && data_last[2] < 300)	//×ªÍä£¨ÔÚ×ªÍäÌõ¼þÏÂ0»á³öÏÖ700+µÄÖµ£©
-	    {Type = 1;multiple = 1;}
-//	else if(data_last[2] > 650 && data_last[0] > 700)	//ÓÒÈë»·
+	if((data_last[1] >  200 || data_last[3] > 200) && data_last[2] < 300){	//×ªï¿½ä£¨ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½700+ï¿½ï¿½Öµï¿½ï¿½
+	Type = 1;multiple = 1;}
+//	else if(data_last[2] > 650 && data_last[0] > 700)	//ï¿½ï¿½ï¿½ë»·
 //	{Type = 2;Record_Dis = 0;}
-//	else if(data_last[2] > 650 && data_last[4] > 700)	//×óÈë»·
+//	else if(data_last[2] > 650 && data_last[4] > 700)	//ï¿½ï¿½ï¿½ë»·
 //	{Type = 3;Record_Dis = 0;}
 //	else if(data_last[2] < 300 && (data_last[1] > 200 || data_last[3] > 130))
 //	{Type = 1;multiple = 1.5;}
-	else
+	else{
 		Type = 0;
+	}
 	
-	//Èë»·
+	//ï¿½ë»·
 	circle();
 
-	//±ÜÕÏÅÐ¶¨
-	if(dl1b_distance_mm < 620 && Chance == 1)
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
+	if(dl1b_distance_mm < 620 && Chance == 1){
 		Type = 4;
+	}
 	
-	//delay_circle,ÑÓ³ÙÈë»·±ê¼Ç
-	if(Type == 2 || Type == 3)
+	//delay_circle,ï¿½Ó³ï¿½ï¿½ë»·ï¿½ï¿½ï¿½
+	if(Type == 2 || Type == 3){
 	{delay_circle = 1;Record_Dis = 1;}
-	//ÍË³öÈë»·
-	if(delay_circle == 1 && Distance > 50 )
-	{delay_circle = 2;Record_Dis = 0;}
+	}
+
+	//ï¿½Ë³ï¿½ï¿½ë»·
+	if(delay_circle == 1 && Distance > 50 ){
+	{delay_circle = 2;Record_Dis = 0;}}
 	
-	//delay_avoiding,±ÜÕÏ±êÖ¾
-	if(Type == 4)
-	{delay_avoiding = 1;Record_Dis = 1;}
-	else if(delay_avoiding == 1 && Distance > 290)
-	{delay_avoiding = 0;Record_Dis = 0;Type = 0;Chance = 0;}
+	//delay_avoiding,ï¿½ï¿½ï¿½Ï±ï¿½Ö¾
+	if(Type == 4){
+	{delay_avoiding = 1;Record_Dis = 1;}}
+
+	else if(delay_avoiding == 1 && Distance > 290){
+	{delay_avoiding = 0;Record_Dis = 0;Type = 0;Chance = 0;}}
 }
 
