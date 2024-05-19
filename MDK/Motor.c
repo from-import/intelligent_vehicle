@@ -19,7 +19,7 @@ float Dir_Pr = 1.2, Dir_Ir = 1.6, Dir_Dr = 0;  // 右侧物理阻力较大
 
 // Line_PID
 float Line_P = 10, Line_I = 1;
-float Line_error;
+float Line_error = 0;
 float Line_value = 0;
 
 // 逻辑变量
@@ -33,9 +33,7 @@ float a, b;  // 计算过渡值
 
 void Motor()
 {
-    /*****************************************************************
-    Tips:以下部分为编码器部分
-    *****************************************************************/
+    // Tips:以下部分为编码器部分
     // 读取采集到的编码器脉冲数
     templ_pluse = ctimer_count_read(SPEEDL_PLUSE);
     tempr_pluse = ctimer_count_read(SPEEDR_PLUSE);
@@ -52,15 +50,10 @@ void Motor()
     Current_speed = (abs(templ_pluse) + abs(tempr_pluse)) / 2;
     Current_speed = (1) * Current_speed * 20.4 / (2355.2 * 0.02);  // 速度 = 脉冲数 * 周长 / 2368 * 周期; 得到实际值
 
-    /*****************************************************************
-    Tips:以下部分为直线参数设置
-    *****************************************************************/
-    speed_R = 25;
-    speed_L = 25;
+    // 直线参数设置
+    speed_R = 15;speed_L = 15;
 
-    /*****************************************************************
-    Tips:以下部分为PID控制部分
-    *****************************************************************/
+    // Tips:以下部分为PID控制部分
     a = (1) * templ_pluse * 20.4 / (2355.2 * 0.02);  // 速度 = 脉冲数 * 周长 / 2368 * 周期; 得到实际值
     b = (1) * tempr_pluse * 20.4 / (2355.2 * 0.02);  // 速度 = 脉冲数 * 周长 / 2368 * 周期; 得到实际值
 
@@ -74,67 +67,64 @@ void Motor()
     error_pre_last2 = error_pre2;
     error_pre2 = error2;
 
-    /*****************************************************************
-    Tips:以下部分为差速控制部分(PID)
-    *****************************************************************/
-    if (Type == 1) {
-        if (offset2 > 0) {
-            Dir_value = (offset - dir_error) * Dir_P + offset * Dir_I + (offset - 2 * (dir_error) + dir_error_last) * Dir_D;
-            dir_error = offset;
-            dir_error_last = dir_error;
+    // a,b分别为目前的左论和右轮速度
+    // offset 为 01 的电磁值和 与 34 的电磁值和比值
+    // offset2 为 0 的电磁值和 4 的电磁值 比值
+    // error1 为 左轮的设定速度与实际速度的差值,越大说明误差越大
+    // error2 为 右轮的设定速度与实际速度的差值,越大说明误差越大
+    // multiple == 1 为修正值
 
-            dutyR = dutyR - multiple * Dir_value;
-            dutyL = dutyL + multiple * Dir_value;
-        } else {
-            Dir_value = (offset - dir_error) * Dir_Pr + offset * Dir_Ir + (offset - 2 * (dir_error) + dir_error_last) * Dir_Dr;
-            dir_error = offset;
-            dir_error_last = dir_error;
 
-            dutyR = dutyR - multiple * Dir_value;
-            dutyL = dutyL + multiple * Dir_value;
-        }
-    }
-
-    /*****************************************************************
-    Tips:以下直线调节部分(off)
-    *****************************************************************/
+    /*    
+    //根据 offset2: (0 的电磁值和 4 的电磁值 比值) 来调用不同的PID参数
     if (abs(offset2) > 30) {
         Line_P = 10;
         Line_I = 1;
     }
+    */
 
-    if (Type == 0) {
+    // Type = 0 为直线状态
+    if (Type == 0){
         Line_value = (offset2 - Line_error) * Line_P + offset2 * Line_I;
         Line_error = offset2;
         dutyR = dutyR - Line_value;
         dutyL = dutyL + Line_value;
     }
 
-    /*****************************************************************
-    Tips:开环补偿部分
-    *****************************************************************/
-    // if (Type == 0) {
-    //     if (abs(offset2) > 80) {
-    //         dutyR = dutyR - 0.35 * offset2;
-    //         dutyL = dutyL + 0.35 * offset2;
-    //     } else if (abs(offset2) > 70) {
-    //         dutyR = dutyR - 0.35 * offset2;
-    //         dutyL = dutyL + 0.35 * offset2;
-    //     } else if (abs(offset2) > 60) {
-    //         dutyR = dutyR - 0.6 * offset2;
-    //         dutyL = dutyL + 0.6 * offset2;
-    //     } else if (abs(offset2) > 50) {
-    //         dutyR = dutyR - 0.3 * offset2;
-    //         dutyL = dutyL + 0.3 * offset2;
-    //     } else if (abs(offset2) > 40) {
-    //         dutyR = dutyR - 0.4 * offset2;
-    //         dutyL = dutyL + 0.4 * offset2;
-    //     }
-    // }
+    // Type == 1 表示转弯
+    if (Type == 1) {
+        if (offset2 > 0) {
+            // 使用比例-积分-微分（PID）控制器计算 Dir_value
+            Dir_value = (offset - dir_error) * Dir_P  // 比例项：当前偏差与前一偏差的差值
+                        + offset * Dir_I             // 积分项：偏差的累积
+                        + (offset - 2 * dir_error + dir_error_last) * Dir_D; // 微分项：偏差的变化率
 
-    /*****************************************************************
-    Tips:开环入环程序
-    *****************************************************************/
+            // 更新错误值，为下一次计算做准备
+            dir_error = offset;
+            dir_error_last = dir_error;
+
+            // 调整电机的占空比，以控制车辆转向
+            dutyR = dutyR - multiple * Dir_value; // 右侧电机占空比减少
+            dutyL = dutyL + multiple * Dir_value; // 左侧电机占空比增加
+        }
+        else {
+            // 使用另一个 PID 控制器计算 Dir_value
+            Dir_value = (offset - dir_error) * Dir_Pr  // 比例项：当前偏差与前一偏差的差值
+                        + offset * Dir_Ir             // 积分项：偏差的累积
+                        + (offset - 2 * dir_error + dir_error_last) * Dir_Dr; // 微分项：偏差的变化率
+
+            // 更新错误值，为下一次计算做准备
+            dir_error = offset;
+            dir_error_last = dir_error;
+
+            // 调整电机的占空比，以控制车辆转向
+            dutyR = dutyR - multiple * Dir_value; // 右侧电机占空比减少
+            dutyL = dutyL + multiple * Dir_value; // 左侧电机占空比增加
+        }
+    }
+
+
+    // Tips:开环入环程序
     if (delay_circle == 1) {
         dutyR = 1200;
         dutyL = 0;
@@ -144,15 +134,12 @@ void Motor()
         dutyR = 0;
     }
 
-    /*****************************************************************
-    Tips:以下部分为出线停车部分
-    *****************************************************************/
+    // 出线停车
     if (data_last[0] + data_last[1] + data_last[4] + data_last[3] <= 200)
         dutyL = dutyR = 0;
 
-    /*****************************************************************
-    Tips:开环避障程序
-    *****************************************************************/
+    // Tips:开环避障程序
+
     if (delay_avoiding == 1) {
         if (Distance < 50) {
             dutyL = 2000;
@@ -169,21 +156,18 @@ void Motor()
         }
     }
 
-    /*****************************************************************
-    Tips:最高优先，按键启动
-    *****************************************************************/
+    // Tips:最高优先，按键启动
     if (Statu == 0)
         dutyL = dutyR = 0;
-
-    /*****************************************************************
-    Tips:以下部分为电机运行代码
-    *****************************************************************/
+    
     // 限幅
     if (dutyL > 6000) dutyL = 6000;
     if (dutyL < -2000) dutyL = -2000;
     if (dutyR > 6000) dutyR = 6000;
     if (dutyR < -2000) dutyR = -2000;
 
+    //  给电机赋值
+    // pwm_duty
     if (dutyL <= 0) {  // 正转
         DIR_L = 0;
         pwm_duty(PWM_L, -dutyL);

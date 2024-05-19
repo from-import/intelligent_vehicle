@@ -22,7 +22,7 @@ void All_int()
     adc_init(ADC_P01, 0);       // P01引脚        
     adc_init(ADC_P05, 0);       // P05引脚        
     adc_init(ADC_P06, 0);       // P06引脚        
-    adc_init(ADC_P03, 0);       // P03引脚    
+    adc_init(ADC_P14, 0);       // P14引脚    
     
     // 陀螺仪初始化
     // mpu6050_init();

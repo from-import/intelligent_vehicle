@@ -5,7 +5,7 @@ extern double Standard;
 extern int adjust;
 extern int Statu;
 
-extern uint16 battery_voltage;     //µç³ØµçÑ¹
+extern uint16 battery_voltage;
 
 void Button();
 void Battery();

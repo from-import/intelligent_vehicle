@@ -11,7 +11,7 @@ void initPID(PIDController *pid, float kp, float ki, float kd) {
 }
 
 // 计算PID输出
-float calculatePID(PIDController *pid, float setpoint, float process_variable) {
+float calculatePID(PIDController *pid, float setpoinSt, float process_variable) {
     float error = setpoint - process_variable;
 
     // 比例项

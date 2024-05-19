@@ -2,8 +2,10 @@
 #define ADC_READ_H_
 
 void ADC_read();
-extern int offset;          //µç´Å²îÖµ¼ÆËã
-extern float data_last[5];   //µç´ÅÖµ
-extern int offset2;          //µç´Å²îÖµ¼ÆËã
-
+extern int offset;         // ç”µç£å·®å€¼è®¡ç®—
+extern float data_last[5]; // ç”µç£å€¼
+extern int offset2;        // ç”µç£å·®å€¼è®¡ç®—
+extern int difference1;
+extern int difference2;
+extern int difference3;
 #endif
