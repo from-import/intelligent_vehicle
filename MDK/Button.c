@@ -1,49 +1,33 @@
 #include "headfile.h"
 #include "Initial.h"
 
-//Button����
+// Button参数
 double Standard = 1;
 int adjust = 5;
 int Statu = 0;
-//Battery����
-uint16 ad_result = 0;           //���ŵ�ѹ
-uint16 battery_voltage = 0;     //��ص�ѹ
+// Battery参数
+uint16 ad_result = 0;           // 引脚电压
+uint16 battery_voltage = 0;     // 电池电压
 uint32 temp;
 
 void Battery()
 {
-	ad_result = adc_once(BAT_VOL_PIN, ADC_12BIT);
-
-	//�������ǰadc���ŵĵ�ѹ ���㹫ʽΪ ad_result*VCC/ADC�ֱ���    VCC��λΪmv
-	temp = (((uint32)ad_result * 5000) / 4096); 
-	
-	//�������ŵ�ѹ  �ͷ�ѹ�������ֵ�����ص�ѹ ���㹫˾Ϊ   ���ŵ�ѹ*(R2+R3)/R3   R3Ϊ�ӵض˵���
-	battery_voltage =  temp * 3;
-	
-		}
-	
-
-// Button pressed :  First == 0
+    ad_result = adc_once(BAT_VOL_PIN, ADC_12BIT);
+    temp = (((uint32)ad_result * 5000) / 4096);  // 计算出当前adc引脚的电压，计算公式为 ad_result * VCC / ADC分辨率，VCC单位为mv
+    battery_voltage = temp * 3;  // 根据引脚电压和分压电阻的阻值计算电池电压，计算公式为引脚电压 * (R2 + R3) / R3，R3为接地端电阻
+}
 
 void Button()
 {
-	//У׼��ֵ�ͺ�����ֵ
-	if(First == 0){
-	// pass
-	}
-
-	if(Second == 0){
-		Statu = 1;
-		}	
-	
-	if (demo1 == 0){
-		speed_R = 10;
-		speed_L = 10;
-	}
-	
-	if (demo1 == 1){
-		speed_R = 25;
-		speed_L = 25;
-	}
-
+    // 校准中值和横竖比值
+    if (First == 0)
+    {
+        Standard = 300 / data_last[2];
+        // 除号后面是实验室目标值
+        // adjust = (data_last[0] + data_last[4]) / (data_last[1] + data_last[3]);
+    }
+    if (Second == 0)
+    {
+        Statu = 1;
+    }		
 }

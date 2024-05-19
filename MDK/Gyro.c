@@ -6,20 +6,18 @@ int Yaw;
 int Distance = 0;
 int Record_Dis = 0;
 
-void Gyro(){
-	mpu6050_gyro_z /= 54.63;
-	Angle_gz = Angle_gz +	mpu6050_gyro_z*0.4;
+void Gyro()
+{
+		mpu6050_gyro_z /= 54.63;
+		Angle_gz = Angle_gz +	mpu6050_gyro_z*0.4;
     Yaw = (int16)Angle_gz;
-	}
+	
+}
 
 void Disney()
-	{
-			/***�����¼***/
-		if(Record_Dis){
-			Distance=Distance+Current_speed*10*0.005;
-		}
-		
-		else{
-			Distance=0;
-		}
-	}
+{
+		/***距离记录***/
+	if(Record_Dis)
+		Distance=Distance+Current_speed*10*0.005;
+	else Distance=0;
+}
