@@ -68,7 +68,7 @@ void Flag(){
     //        multiple = 1;
     //    }
 	
-    if ((data_last[1] > 500 || data_last[3] > 500) && data_last[2] < 390){
+		if ((data_last[1] > 500 || data_last[3] > 500) && data_last[2] < 390){
         Type = 1; //转弯
         multiple = 1;
     }

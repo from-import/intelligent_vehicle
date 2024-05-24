@@ -3,7 +3,7 @@
 
 // Button参数
 double Standard = 1;
-int adjust = 5;
+int adjust = 1;
 int Statu = 0;
 // Battery参数
 uint16 ad_result = 0;           // 引脚电压
@@ -22,7 +22,7 @@ void Button()
     // 校准中值和横竖比值
     if (First == 0)
     {
-		Statu = 0;
+		Statu = 2;
     }
 		// 电机启动
     if (Second == 0)

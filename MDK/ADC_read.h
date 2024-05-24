@@ -10,4 +10,9 @@ extern double difference2;
 extern double difference3;
 extern int ad_sum;
 extern int rightOrLeft ;
+extern int AD_1MAX;
+extern int AD_5MAX;
+extern int AD_2MAX;
+extern int AD_4MAX;
+
 #endif

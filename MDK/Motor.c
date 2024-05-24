@@ -9,16 +9,16 @@ float error_pre1 = 0, error_pre2 = 0;
 float error_pre_last1 = 0, error_pre_last2 = 0;  // 电机累计二次误差值
 
 // Dir_PID
-float Dir_P = 0, Dir_I = 0.16, Dir_D = 1;
+float Dir_P = 3, Dir_I = 8, Dir_D = 0.01;
 float dir_error;
 float dir_error_last;
 float Dir_value = 0;
 
 // Dir_PIDR
-float Dir_Pr = 0, Dir_Ir = 0.16, Dir_Dr = 1;  // 右侧物理阻力较大
+float Dir_Pr = 3, Dir_Ir = 8, Dir_Dr = 0.01;  // 右侧物理阻力较大
 
 // Line_PID
-float Line_P = 10, Line_I = 0.08;
+float Line_P = 0.1, Line_I = 0.3;
 float Line_error = 0;
 float Line_value = 0;
 
@@ -50,7 +50,8 @@ void Motor()
     Current_speed = (1) * Current_speed * 20.4 / (2355.2 * 0.02);  // 速度 = 脉冲数 * 周长 / 2368 * 周期; 得到实际值
 
     // 直线参数设置
-    speed_R = 15;speed_L = 15;
+    speed_R = 10;
+	  speed_L = 10;
 
     // PID控制部分
     a = (1) * templ_pluse * 20.4 / (2355.2 * 0.02);  // 速度 = 脉冲数 * 周长 / 2368 * 周期; 得到实际值
@@ -78,7 +79,7 @@ void Motor()
     // offset 为 01 的电磁值和 与 34 的电磁值和比值
     // offset2 为 0 的电磁值和 4 的电磁值 比值
     if (Type == 0){
-        if(abs(offset2) < 20){
+        if(abs(offset2) < 10000){
             Line_value = (offset2 - Line_error) * Line_P + offset2 * Line_I;
             Line_error = offset2;
             dutyR = dutyR - Line_value;
@@ -89,10 +90,11 @@ void Motor()
 	/*****************************************************************
 	Tips:以下部分为// Type = 0 为直线状态（开环调节）
 	*****************************************************************/
+		/*
     if(Type == 0){
         if (abs(offset2) > 80){
-            dutyR = dutyR-0.08*offset2;
-            dutyL = dutyL+0.08*offset2;
+            dutyR = dutyR-0.4*offset2;
+            dutyL = dutyL+0.4*offset2;
         }
 
         //else if (abs(offset2) > 70)
@@ -100,37 +102,43 @@ void Motor()
         //dutyL = dutyL+0.3*offset2;}
 
         else if (abs(offset2) > 60){
-            dutyR = dutyR-0.08*offset2;
-            dutyL = dutyL+0.08*offset2;
+            dutyR = dutyR-0.3*offset2;
+            dutyL = dutyL+0.3*offset2;
         }	
 
         //else if (abs(offset2) > 50)
         //{dutyR = dutyR-0.2*offset2;
         //dutyL = dutyL+0.2*offset2;}
 
-        else if (abs(offset2) > 40){
-            dutyR = dutyR-0.08*offset2;
-            dutyL = dutyL+0.08*offset2;
-        }
+//        else if (abs(offset2) > 40){
+//            dutyR = dutyR-0.5*offset2;
+//            dutyL = dutyL+0.5*offset2;
+//        }
 
         else if (abs(offset2) > 30){
-            dutyR = dutyR-0.04*offset2;
-            dutyL = dutyL+0.04*offset2;
+            dutyR = dutyR-0.15*offset2;
+            dutyL = dutyL+0.15*offset2;
+        }
+				else if (abs(offset2) > 10){
+            dutyR = dutyR-0.05*offset2;
+            dutyL = dutyL+0.05*offset2;
         }
     }
+		*/
 		
 	/*****************************************************************
 	Tips:以下部分为// Type == 1 表示转弯
 	*****************************************************************/	
     if (Type == 1){
+//			speed_R = 10;
+//	    speed_L = 10;
         if (offset2 > 0){
             // 使用比例-积分-微分（PID）控制器计算 Dir_value
             Dir_value = (offset - dir_error) * Dir_P  // 比例项：当前偏差与前一偏差的差值
                         + offset * Dir_I             // 积分项：偏差的累积
                         + (offset - 2 * dir_error + dir_error_last) * Dir_D; // 微分项：偏差的变化率
 
-            dir_error_last = dir_error;
-			dir_error = offset;
+			      dir_error = offset;
             
             dutyR = dutyR - multiple * Dir_value; // 右侧电机占空比减少
             dutyL = dutyL + multiple * Dir_value; // 左侧电机占空比增加
@@ -162,7 +170,7 @@ void Motor()
 	/*****************************************************************
 	Tips:以下部分为出线停车部分
 	*****************************************************************/	
-    if (data_last[0] + data_last[1] + data_last[4] + data_last[3] <= 10)
+    if (data_last[0] + data_last[1] + data_last[4] + data_last[3] <= 5)
         dutyL = dutyR = 0;
 
 	/*****************************************************************
@@ -185,7 +193,7 @@ void Motor()
     }
 
     // Tips:最高优先，按键启动
-    if (Statu == 0)
+    if (Statu == 0 || Statu == 2)
         dutyL = dutyR = 0;
     
     // 限幅

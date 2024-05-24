@@ -25,7 +25,7 @@ void All_int()
     adc_init(ADC_P14, 0);       // P14引脚    
     
     // 陀螺仪初始化
-    // mpu6050_init();
+    mpu6050_init();
     
     // 电池初始化
     adc_init(BAT_VOL_PIN, ADC_SYSclk_DIV_32);
