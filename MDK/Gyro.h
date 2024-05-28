@@ -3,7 +3,10 @@
 
 extern int Yaw;
 extern int Distance;
+
+
 extern int Record_Dis;
+extern int Record_Gy;
 	
 void Gyro();
 void Disney();
