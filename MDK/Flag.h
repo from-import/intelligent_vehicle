@@ -5,6 +5,7 @@ extern int Type;
 extern int multiple;
 extern int delay_circle;
 extern int delay_avoiding;
+extern int OPEN_corner;
 
 void Flag();
 

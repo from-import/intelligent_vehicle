@@ -10,5 +10,6 @@ extern int Record_Gy;
 	
 void Gyro();
 void Disney();
+int delay_mine(int ms);
 
 #endif
