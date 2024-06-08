@@ -11,15 +11,15 @@ float right_value,left_value;
 
 //归一化算法最大最小值存储
 int AD_1MAX = 580;
-int AD_2MAX = 76;
-int AD_4MAX = 43;
+int AD_2MAX = 80;
+int AD_4MAX = 60;
 int AD_5MAX = 691;
 
 #define AD_1MIN 0             // data_last[0]最小电感值
 #define AD_5MIN 0             // data_last[4]最小电感值
 
 #define AD_2MIN 0             // data_last[1]最小电感值
-#define AD_4MIN 0            // data_last[3]最小电感值
+#define AD_4MIN 0           // data_last[3]最小电感值
 
 //十字修正函数（off）
 void Crossing(){

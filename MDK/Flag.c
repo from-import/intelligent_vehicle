@@ -58,18 +58,34 @@ void Flag()
 			BEEP = 1;
 		}
     	else{
+				  BEEP = 0;
         	Type = 0;
-			BEEP = 0;
     	}
-	/*****************************************************************
+/*****************************************************************
 		Tips:以下为其他
 	*****************************************************************/			
     //直角距离延迟
 		CORNER();
+	
+	//避免再次入环
+	if(delay_circle == 2)
+		Type = 0;
 
 	//避障判定
-	if(dl1b_distance_mm < 1000)
-		Type = 666;
+	if(dl1b_distance_mm < 620 && Chance == 1)
+		Type = 4;
 	
+	//delay_circle,延迟入环标记
+	if(Type == 2 || Type == 3)
+	{delay_circle = 1;Record_Dis = 1;}
+	//退出入环
+	if(delay_circle == 1 && Distance > 50 )
+	{delay_circle = 2;Record_Dis = 0;}
+	
+	//delay_avoiding,避障标志
+	if(Type == 4)
+	{delay_avoiding = 1;Record_Dis = 1;}
+	else if(delay_avoiding == 1 && Distance > 290)
+	{delay_avoiding = 0;Record_Dis = 0;Type = 0;Chance = 0;}
 }
 

@@ -9,7 +9,7 @@ float error_pre1=0,error_pre2=0;
 float error_pre_last1=0,error_pre_last2=0;	//电机累计二次误差值
 
 //Dir_PID
-float Dir_P=0,Dir_I=160,Dir_D=0;
+float Dir_P=0,Dir_I=153,Dir_D=0;
 float dir_error;
 float dir_error_last;	
 float Dir_value = 0 ;
@@ -41,11 +41,11 @@ void Motor()
 	Tips:以下部分为编码器部分
 	*****************************************************************/
 	//读取采集到的编码器脉冲数
-    templ_pluse = ctimer_count_read(SPEEDL_PLUSE);
+  templ_pluse = ctimer_count_read(SPEEDL_PLUSE);
 	tempr_pluse = ctimer_count_read(SPEEDR_PLUSE);
 
    //计数器清零
-    ctimer_count_clean(SPEEDL_PLUSE);
+  ctimer_count_clean(SPEEDL_PLUSE);
 	ctimer_count_clean(SPEEDR_PLUSE);
 
     //采集方向信息
@@ -58,8 +58,8 @@ void Motor()
 	/*****************************************************************
 	Tips:以下部分为直线参数设置
 	*****************************************************************/	
-			speed_R = 35;
-			speed_L = 35;
+			speed_R = 30;
+			speed_L = 30;
 			
 	/*****************************************************************
 	Tips:以下部分为PID控制部分
@@ -127,22 +127,6 @@ void Motor()
 		dutyR = dutyR+multiple*Dir_value;
 		dutyL = dutyL-multiple*Dir_value;
 		}
-	
-	/*****************************************************************
-	Tips:开环避障程序
-	*****************************************************************/		
-	if(Type == 666)
-			{
-			Distance = 0;
-			if(Distance < 50)
-			{dutyL = 3000;dutyR = -2000;}
-			else if(Distance < 130)
-			{dutyL = 3000;dutyR = 3000;}
-			else if(Distance < 230)
-			{dutyR = 4500;dutyL = -2300;}
-			else
-			{dutyL = 3000;dutyR = 3000;}	
-			}
 			
 		
 	/*****************************************************************
@@ -150,6 +134,20 @@ void Motor()
 	*****************************************************************/	
 	if(data_last[0]+data_last[1]+data_last[4]+data_last[3]<=100)
 			dutyL = dutyR = 0;
+
+	/*****************************************************************
+	Tips:开环避障程序
+	*****************************************************************/		
+	if(delay_avoiding == 1){
+		if(Distance < 50)
+		{dutyL = 2000;dutyR = -1800;}
+		else if(Distance < 110)
+		{dutyL = 2000;dutyR = 2000;}
+		else if(Distance < 210)
+		{dutyR = 4500;dutyL = -2300;}
+		else
+		{dutyL = 2000;dutyR = 2000;}	
+	}
 	
 	/*****************************************************************
 	Tips:最高优先，按键启动
@@ -165,15 +163,6 @@ void Motor()
 		//限幅
 		if(dutyR>6000) dutyR=6000;
 		if(dutyR<-2000) dutyR = -2000;
-	
-		//转弯独立限幅
-		if(OPEN_corner == 1){
-		if(dutyL>7000) dutyL=7000;
-		if(dutyL<-9000) dutyL = -9000;
-		//限幅
-		if(dutyR>7000) dutyR=7000;
-		if(dutyR<-9000) dutyR = -9000;
-	}
 	
 	if(dutyL <= 0) //正转
         {

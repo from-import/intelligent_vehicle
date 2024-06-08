@@ -27,7 +27,8 @@ void All_int()
 	//陀螺仪初始化
 	 mpu6050_init();
 	
-	dl1b_init();
+  // 红外测距模块初始化
+  //dl1b_init();
 		
   //无线串口初始化
 	//wireless_uart_init();
