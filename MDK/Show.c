@@ -11,7 +11,7 @@ void Show()
     lcd_showstr(0, 3, "4");
     lcd_showstr(0, 4, "5");
     lcd_showstr(0, 5, "Type");
-    lcd_showstr(0, 6, "Dir_P");
+    lcd_showstr(0, 6, "offset2");
     lcd_showstr(0, 7, "offset");
 
     // 显示传感器数据
@@ -21,9 +21,8 @@ void Show()
     lcd_showint16(6 * 10, 3, data_last[3]);
     lcd_showint16(6 * 10, 4, data_last[4]);
 		lcd_showint16(8 * 10, 5,Type);
-		lcd_showint16(8 * 10, 6,Dir_P);
+		lcd_showint16(8 * 10, 6,offset2);
 		lcd_showint16(8 * 10, 7,offset);
-
 
 
     // 显示其他调试信息

@@ -5,7 +5,6 @@ void Motor();
 
 extern int dutyL,dutyR;
 extern float Dir_value;
-extern float Current_speed;  //Êµï¿½ï¿½
-extern float Dir_P;
+extern float Current_speed;  //ÊµËÙ
 
 #endif
