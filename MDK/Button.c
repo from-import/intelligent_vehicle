@@ -11,8 +11,7 @@ void Button()
 	//校准中值和横竖比值
 	if(First == 0)
 	{
-		//除号后面是实验室目标值
-		//adjust = (data_last[0]+data_last[4])/(data_last[1]+data_last[3]);
+		Dir_P = Dir_P + 0.1;
 	}
 	if(Second == 0){
 		delay_ms(1000);
