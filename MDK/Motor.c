@@ -2,28 +2,32 @@
 #include "Initial.h"
 
 //Motor_PIDL
-float Motor_P=30,Motor_I=10,Motor_D=0;
+float Motor_P=20,Motor_I=12,Motor_D=0;
 int16 speed_R=0,speed_L=0;			//理想电机值
 float error1,error2;      //电机第一次误差值
 float error_pre1=0,error_pre2=0;
 float error_pre_last1=0,error_pre_last2=0;	//电机累计二次误差值
 
 //Dir_PID
-float Dir_P=0,Dir_I=90,Dir_D=0;
+float Dir_P=12,Dir_I=63,Dir_D= 0;
 float dir_error;
 float dir_error_last;	
 float Dir_value = 0 ;
 
-//Dir_PIDR
-//float Dir_Pr=3.9,Dir_Ir=6.4,Dir_Dr=0;//右侧物理阻力较大
+////Dir_PID
+//float Dir_P=5,Dir_I=30;
+//float error_corl,error_corr;
+//float error_corl_pre,error_corr_pre;
+
+////Dir_期望增速
+//float Dir_hope_I=90;
+//float Dir_value = 0 ;
 
 //Line_PID
 float Line_D,Line_I,Line_P;
 float Line_error;
 float Line_error_last;
 float Line_value = 0 ;
-
-
 
 //逻辑变量
 
@@ -32,7 +36,9 @@ int16 templ_pluse = 0;
 int16 tempr_pluse = 0;
 float Current_speed;  //实速
 int16 dutyL,dutyR;
-float a,b;			//计算过渡值  
+float a,b;			//计算过渡值 
+int Correct_speedL = 0,Correct_speedR = 0;
+int Correct_dutyL = 0,Correct_dutyR = 0;
 
 void Motor()
 {
@@ -98,9 +104,9 @@ void Motor()
 			}
 
 			else if(abs(offset2) > 20 )
-				{Line_P=60;Line_I=0.5;}
-//			else if(abs(offset2) > 15 )
-//				{Line_P=80;Line_I=1;}
+				{Line_P=60;Line_I=0.2;}
+//			else if(abs(offset2) > 10 )
+//				{Line_P=10;Line_I=0.2;}
 	
 			Line_value = (offset2-Line_error)*Line_P+offset2*Line_I;
 			Line_error = offset2;
@@ -129,7 +135,38 @@ void Motor()
 		dutyL = dutyL-multiple*Dir_value;
 		}
 			
-		
+	
+///*****************************************************************
+//	Tips:以下部分为差速控制部分(PID)
+//	*****************************************************************/	
+//			//存储基准值
+//			if(Type == 0 && Speed_Clock > 0){
+//				Correct_dutyL = templ_pluse;
+//				Correct_dutyR = tempr_pluse;
+//				Speed_Clock--;
+//			}
+//				
+//			if(Type == 1){
+////				//期望增速
+//				Dir_value =offset*Dir_hope_I;
+//				
+//				//实际增速误差PID
+//				//期望duty和期望速度的转换
+//			Correct_speedR = 1.0218*(Correct_dutyR-multiple*Dir_value) - 260.88;	
+//			Correct_speedL = 1.0371*(Correct_dutyL+multiple*Dir_value) - 318.99;
+
+//			//PID追踪转弯目标值（左侧）	
+//			error_corl=(int)(Correct_speedL-templ_pluse*14);
+//			dutyL=dutyL+(error_corl-error_corl_pre)*Dir_P+error_corl*Dir_I;
+//			error_corl_pre=error_corl;
+//		
+//				//右侧
+//			error_corr=(int)(Correct_speedR-tempr_pluse*14);
+//			dutyR=dutyR+(error_corr-error_corr_pre)*Dir_P+error_corr*Dir_I;
+//			error_corr_pre=error_corr;
+//			
+//			}
+					
 	/*****************************************************************
 	Tips:以下部分为出线停车部分
 	*****************************************************************/	

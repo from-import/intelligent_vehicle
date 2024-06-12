@@ -47,6 +47,10 @@ void Flag()
 	if(!Time_Down){
 		Time_clock--;
 		BEEP = 1;
+//		if(data_last[1] > 800 && data_last[3] > 800){
+//			Type = 0;
+//			Time_clock = 30;
+//		}
 		if(!Time_clock){
 			Time_Down = 1;
 		}
@@ -54,14 +58,16 @@ void Flag()
 	//十字和直角模块处理
 	else if(data_last[1] > 1000 || data_last[3] > 1000){		
 //		if (abs(data_last[1]-data_last[3]) > 970 &&  && abs(data_last[0]-data_last[4]) > 80){
-		if (abs(data_last[0]-data_last[4]) > 80){
-			Type = 0; //十字直行
+		if (abs(data_last[0]-data_last[4]) > 70){
+			Type = 0; //钝角
 			Time_clock = 50;
+			Time_Down = 0;
    		}
 		else{
 			Type = 1; //转弯
       multiple = 3;
-			Time_clock = 300;
+			Time_clock = 40;
+			Time_Down = 0;
     	}
 		}
 	//其他元素

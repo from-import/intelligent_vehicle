@@ -4,6 +4,7 @@
 //Button参数
 int adjust = 5;
 int Statu = 0;
+int Speed_Clock = 0;
 
 	
 void Button()
@@ -17,5 +18,6 @@ void Button()
 	if(Second == 0){
 		delay_ms(1000);
 		Statu = 1;
+		Speed_Clock = 100;
 	}		
 }
