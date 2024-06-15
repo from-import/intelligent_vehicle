@@ -2,32 +2,34 @@
 #include "Initial.h"
 
 //Motor_PIDL
-float Motor_P=20,Motor_I=12,Motor_D=0;
+float Motor_P=40,Motor_I=5.5,Motor_D=5;
 int16 speed_R=0,speed_L=0;			//理想电机值
 float error1,error2;      //电机第一次误差值
 float error_pre1=0,error_pre2=0;
 float error_pre_last1=0,error_pre_last2=0;	//电机累计二次误差值
 
-//Dir_PID
-float Dir_P=12,Dir_I=63,Dir_D= 0;
-float dir_error;
-float dir_error_last;	
-float Dir_value = 0 ;
+//Dir_PIDR
+float DirR_P=50,DirR_I=220,DirR_D=6;
+float dir_errorR;
+float dir_error_lastR;	
+float Dir_valueR = 0 ;
 
-////Dir_PID
-//float Dir_P=5,Dir_I=30;
-//float error_corl,error_corr;
-//float error_corl_pre,error_corr_pre;
+//Dir_PIDL
+float DirL_P=2,DirL_I=220,DirL_D=4;
+float dir_errorL;
+float dir_error_lastL;	
+float Dir_valueL = 0 ;
 
-////Dir_期望增速
-//float Dir_hope_I=90;
-//float Dir_value = 0 ;
+//Dir_PIDR
+//float Dir_Pr=3.9,Dir_Ir=6.4,Dir_Dr=0;//右侧物理阻力较大
 
 //Line_PID
 float Line_D,Line_I,Line_P;
 float Line_error;
 float Line_error_last;
 float Line_value = 0 ;
+
+
 
 //逻辑变量
 
@@ -36,9 +38,7 @@ int16 templ_pluse = 0;
 int16 tempr_pluse = 0;
 float Current_speed;  //实速
 int16 dutyL,dutyR;
-float a,b;			//计算过渡值 
-int Correct_speedL = 0,Correct_speedR = 0;
-int Correct_dutyL = 0,Correct_dutyR = 0;
+float a,b;			//计算过渡值  
 
 void Motor()
 {
@@ -64,8 +64,8 @@ void Motor()
 	/*****************************************************************
 	Tips:以下部分为直线参数设置
 	*****************************************************************/	
-			speed_R = 35;
-			speed_L = 35;
+			speed_R = 55;
+			speed_L = 55;
 			
 	/*****************************************************************
 	Tips:以下部分为PID控制部分
@@ -93,20 +93,18 @@ void Motor()
 		if(Type == 0)
 		{
 			if (abs(offset2) > 80)	{
-				 dutyR = dutyR-6*offset2;
-				 dutyL = dutyL+6*offset2;
+				 dutyR = dutyR-3*offset2;
+				 dutyL = dutyL+3*offset2;
 				}
-			
 
-			else if (abs(offset2) > 40){
-				dutyR = dutyR-3*offset2;
-				dutyL = dutyL+3*offset2;
+			else if (abs(offset2) > 30){
+				dutyR = dutyR-1*offset2;
+				dutyL = dutyL+1*offset2;
 			}
 
 			else if(abs(offset2) > 20 )
-				{Line_P=60;Line_I=0.2;}
-//			else if(abs(offset2) > 10 )
-//				{Line_P=10;Line_I=0.2;}
+				{Line_P=60;Line_I=0.3;}
+			
 	
 			Line_value = (offset2-Line_error)*Line_P+offset2*Line_I;
 			Line_error = offset2;
@@ -128,45 +126,23 @@ void Motor()
 	*****************************************************************/	
 		if(Type == 1)
 		{
-		Dir_value = offset*Dir_I+(offset-2*(dir_error)+dir_error_last)*Dir_D;
-		dir_error = offset;
-		dir_error_last = dir_error;
-		dutyR = dutyR+multiple*Dir_value;
-		dutyL = dutyL-multiple*Dir_value;
+			if(Hand){
+				Dir_valueL = (offset-dir_errorL)*DirL_P+offset*DirL_I+(offset-2*(dir_errorL)+dir_error_lastL)*DirL_D;
+				dir_errorL = offset;
+				dir_error_lastL = dir_errorL;
+				dutyR = dutyR+multiple*Dir_valueL;
+				dutyL = dutyL-multiple*Dir_valueL;
+			}
+			else{
+				Dir_valueR = (offset-dir_errorR)*DirR_P+offset*DirR_I+(offset-2*(dir_errorR)+dir_error_lastR)*DirR_D;
+				dir_errorR = offset;
+				dir_error_lastR = dir_errorR;
+				dutyR = dutyR+multiple*Dir_valueR;
+				dutyL = dutyL-multiple*Dir_valueR;
+			}
 		}
 			
-	
-///*****************************************************************
-//	Tips:以下部分为差速控制部分(PID)
-//	*****************************************************************/	
-//			//存储基准值
-//			if(Type == 0 && Speed_Clock > 0){
-//				Correct_dutyL = templ_pluse;
-//				Correct_dutyR = tempr_pluse;
-//				Speed_Clock--;
-//			}
-//				
-//			if(Type == 1){
-////				//期望增速
-//				Dir_value =offset*Dir_hope_I;
-//				
-//				//实际增速误差PID
-//				//期望duty和期望速度的转换
-//			Correct_speedR = 1.0218*(Correct_dutyR-multiple*Dir_value) - 260.88;	
-//			Correct_speedL = 1.0371*(Correct_dutyL+multiple*Dir_value) - 318.99;
-
-//			//PID追踪转弯目标值（左侧）	
-//			error_corl=(int)(Correct_speedL-templ_pluse*14);
-//			dutyL=dutyL+(error_corl-error_corl_pre)*Dir_P+error_corl*Dir_I;
-//			error_corl_pre=error_corl;
-//		
-//				//右侧
-//			error_corr=(int)(Correct_speedR-tempr_pluse*14);
-//			dutyR=dutyR+(error_corr-error_corr_pre)*Dir_P+error_corr*Dir_I;
-//			error_corr_pre=error_corr;
-//			
-//			}
-					
+		
 	/*****************************************************************
 	Tips:以下部分为出线停车部分
 	*****************************************************************/	

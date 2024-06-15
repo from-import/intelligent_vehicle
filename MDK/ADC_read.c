@@ -26,11 +26,6 @@ void Crossing(){
 	offset2 = data_last[1] > data_last[3] ? offset2-15:offset2+15;
 }
 
-//直线连续弯道
-void BYDCAT(){
-	offset = data_last[1] > data_last[3] ? 200:-200;
-}
-
 void ADC_read()
 {
 	/*****************************************************************
@@ -91,10 +86,5 @@ void ADC_read()
 //	if(Type == 5){
 //			Crossing();
 //	}
-
-	//直角修正函数
-	if(Type == 1){
-		BYDCAT();
-	}
 
 }

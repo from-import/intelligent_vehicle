@@ -11,8 +11,6 @@ int OPEN_corner = 0;
 
 //数值变量
 int multiple = 1;
-int Time_Down = 1;
-int Time_clock = 0;
 
 void CORNER(){
 	    //打开直角延迟
@@ -42,35 +40,14 @@ void Flag()
 	Type=3  为L入环状态
 	Type=4  为避障状态
 	*****************************************************************/	
-	
-	//计数关断电磁判断
-	if(!Time_Down){
-		Time_clock--;
-		BEEP = 1;
-//		if(data_last[1] > 800 && data_last[3] > 800){
-//			Type = 0;
-//			Time_clock = 30;
-//		}
-		if(!Time_clock){
-			Time_Down = 1;
-		}
-	}
-	//十字和直角模块处理
-	else if(data_last[1] > 1000 || data_last[3] > 1000){		
-//		if (abs(data_last[1]-data_last[3]) > 970 &&  && abs(data_last[0]-data_last[4]) > 80){
-		if (abs(data_last[0]-data_last[4]) > 70){
-			Type = 0; //钝角
-			Time_clock = 50;
-			Time_Down = 0;
-   		}
-		else{
+		if (data_last[1] > 400 && data_last[3] > 400){
+			Type = 0; //十字直行
+   		}		
+		else if ((data_last[1] > 600 || data_last[3] > 600) && data_last[2] < 390){
 			Type = 1; //转弯
       multiple = 3;
-			Time_clock = 40;
-			Time_Down = 0;
+			Hand = data_last[3] > data_last[1] ? 1:0;//左1右0
     	}
-		}
-	//其他元素
 		else if((data_last[2] > 600) && (data_last[1] + data_last[3] > 50) && (Type != 114)&& (Type != 514) && (data_last[0] > data_last[4])){
 			Type = 114; //入环判定
 			multiple = 0.6;
